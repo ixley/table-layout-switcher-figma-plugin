@@ -1,0 +1,16 @@
+{
+  "name": "figma-table-layout-plugin",
+  "version": "1.0.0",
+  "description": "Figma plugin to switch table layouts between column-first and row-first",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "keywords": ["figma", "plugin", "table", "layout"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.88.0",
+    "typescript": "^5.3.3"
+  }
+}
