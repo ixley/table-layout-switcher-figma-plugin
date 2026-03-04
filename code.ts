@@ -171,6 +171,7 @@ function createContainerFrame(
   sourceProps: { itemSpacing: number; paddingLeft: number; paddingRight: number; paddingTop: number; paddingBottom: number },
 ): FrameNode {
   const frame = figma.createFrame();
+  frame.fills = []; // remove default white background
   frame.name = name;
   frame.layoutMode = layoutMode;
   frame.primaryAxisSizingMode = "AUTO"; // primary axis hugs content (height for column, width for row)
@@ -251,6 +252,22 @@ function switchLayout(parse: TableParse): void {
     }
   }
 
+  // Push hidden source-container visibility down to cells before moving them.
+  // A hidden row/column container makes all its cells invisible. After restructuring,
+  // those cells need to carry that hidden state individually so the new container
+  // can re-evaluate whether it should be hidden.
+  for (let i = 0; i < containers.length; i++) {
+    if ((containers[i] as any).visible === false) {
+      if (kind === "column-first") {
+        // containers[i] = column i → cells[r][i] for every row
+        for (let r = 0; r < rows; r++) (cells[r][i] as any).visible = false;
+      } else {
+        // containers[i] = row i → cells[i][c] for every column
+        for (let c = 0; c < cols; c++) (cells[i][c] as any).visible = false;
+      }
+    }
+  }
+
   // Move cells into new containers, applying the correct fill properties for the new layout axis.
   //
   // Col→Row rules:
@@ -288,6 +305,27 @@ function switchLayout(parse: TableParse): void {
         // STRETCH fills WIDTH (counter axis of VERTICAL column); layoutGrow=1 fills HEIGHT
         // (primary axis) for fill-row cells.
         setCellLayout(cell, "STRETCH", shouldFillHeight ? 1 : 0);
+      }
+    }
+  }
+
+  // Collapse per-cell hidden state back up to the new container when ALL cells are hidden.
+  // This keeps a single point of visibility control (the container rather than each cell).
+  // Cells inside a hidden container are then restored to visible so their individual
+  // visibility is not redundantly set.
+  if (newKind === "row-first") {
+    for (let r = 0; r < rows; r++) {
+      const rowCells = cells[r];
+      if (rowCells.every(cell => (cell as any).visible === false)) {
+        (newContainers[r] as any).visible = false;
+        for (const cell of rowCells) (cell as any).visible = true;
+      }
+    }
+  } else {
+    for (let c = 0; c < cols; c++) {
+      if (cells.every(row => (row[c] as any).visible === false)) {
+        (newContainers[c] as any).visible = false;
+        for (let r = 0; r < rows; r++) (cells[r][c] as any).visible = true;
       }
     }
   }

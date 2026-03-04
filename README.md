@@ -52,6 +52,14 @@ Fill (`layoutGrow=1`) is preserved across switches:
 | Column container | FIXED or FILL | FILL — stretches to root height |
 | Cell             | FILL (column) | FIXED or FILL                   |
 
+### Visibility
+
+Hidden state is re-evaluated per container after each switch, with a single element controlling visibility at each level:
+
+- **Hidden container → hidden cells:** If a source row or column container is hidden, that hidden state is pushed down to each of its cells before restructuring.
+- **All-hidden cells → hidden container:** After cells are placed into new containers, if every cell in a container is hidden, the container itself is set to hidden and its cells are restored to visible. This keeps one element (the container) in control rather than hiding every cell redundantly.
+- **Partial visibility** (some cells hidden, some visible within a container) passes through unchanged — individual cell hidden states are preserved.
+
 ### Root container
 
 When the layout axis flips, `primaryAxisSizingMode` and `counterAxisSizingMode` are swapped so each physical dimension (width/height) retains its original HUG/FIXED behavior. Spacing (`itemSpacing`) and padding are preserved unchanged.
