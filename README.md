@@ -2,6 +2,14 @@
 
 A Figma plugin that detects whether a selection is a **column-first** or **row-first** table and switches it to the other layout while preserving cell sizing, fill behavior, and auto layout properties.
 
+### As Columns...
+
+<img src="_images/resize-columns.png" width="250" alt="Resize Columns" /> <img src="_images/reorder-columns.png" width="250" alt="Reorder Columns" /> <img src="_images/add-remove-columns.png" width="250" alt="Add/Remove Columns" />
+
+### As Rows...
+
+<img src="_images/resize-rows.png" width="250" alt="Resize Rows" /> <img src="_images/reorder-rows.png" width="250" alt="Reorder Rows" /> <img src="_images/add-remove-rows.png" width="250" alt="Add/Remove Rows" />
+
 ## Layout types
 
 - **Column-first:** The table root is a `HORIZONTAL` auto layout frame. Its direct children are **column** containers (vertical stacks), each holding the cells for that column.
