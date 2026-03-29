@@ -6,8 +6,13 @@
     "build": "tsc",
     "watch": "tsc --watch"
   },
-  "keywords": ["figma", "plugin", "table", "layout"],
-  "author": "",
+  "keywords": [
+    "figma",
+    "plugin",
+    "table",
+    "layout"
+  ],
+  "author": "Jeff French",
   "license": "MIT",
   "devDependencies": {
     "@figma/plugin-typings": "^1.88.0",

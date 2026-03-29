@@ -383,8 +383,6 @@ function switchLayout(parse: TableParse): void {
 
 // —— Plugin entry and UI ——
 
-figma.showUI(__html__, { width: 320, height: 200, themeColors: true });
-
 function getTargetNode(): TableRootNode | null {
   const sel = figma.currentPage.selection;
   if (sel.length !== 1) return null;
@@ -395,47 +393,69 @@ function getTargetNode(): TableRootNode | null {
   return null;
 }
 
-function detectAndSend(): void {
+if (figma.command === "switch") {
+  // Direct switch — no UI, just run and close.
   const node = getTargetNode();
   if (!node) {
-    figma.ui.postMessage({ type: "layoutStatus", kind: null, error: "Select a single frame or instance (the table root)." });
-    return;
+    figma.notify("Select a single table frame or instance.", { error: true });
+  } else {
+    const parse = parseTable(node);
+    if (!parse) {
+      figma.notify("Not a valid table. Use container frames with the same number of cells per container.", { error: true });
+    } else {
+      const previousKind = parse.kind;
+      switchLayout(parse);
+      const newKind = previousKind === "column-first" ? "row-first" : "column-first";
+      figma.notify(`Switched to ${newKind === "column-first" ? "▥ column-first" : "▤ row-first"} layout.`);
+    }
   }
-  const parse = parseTable(node);
-  if (!parse) {
-    figma.ui.postMessage({ type: "layoutStatus", kind: null, error: "Not a valid table: need container frames with equal cell counts." });
-    return;
-  }
-  figma.ui.postMessage({
-    type: "layoutStatus",
-    kind: parse.kind,
-    rows: parse.rows,
-    cols: parse.cols,
-    error: null,
-  });
-}
+  figma.closePlugin();
+} else {
+  // "ui" command (or any other) — show the UI window.
+  figma.showUI(__html__, { width: 320, height: 200, themeColors: true });
 
-figma.ui.onmessage = (msg: { type: string }) => {
-  if (msg.type === "switchLayout") {
+  function detectAndSend(): void {
     const node = getTargetNode();
     if (!node) {
-      figma.notify("Select a single table frame or instance.", { error: true });
+      figma.ui.postMessage({ type: "layoutStatus", kind: null, error: "Select a single frame or instance (the table root)." });
       return;
     }
     const parse = parseTable(node);
     if (!parse) {
-      figma.notify("Not a valid table. Use container frames with the same number of cells per container.", { error: true });
+      figma.ui.postMessage({ type: "layoutStatus", kind: null, error: "Not a valid table: need container frames with equal cell counts." });
       return;
     }
-    switchLayout(parse);
-    figma.notify(`Switched to ${parse.kind === "column-first" ? "column-first" : "row-first"} layout.`);
-    detectAndSend();
-  } else if (msg.type === "detect") {
-    detectAndSend();
+    figma.ui.postMessage({
+      type: "layoutStatus",
+      kind: parse.kind,
+      rows: parse.rows,
+      cols: parse.cols,
+      error: null,
+    });
   }
-};
 
-// Run detection when selection changes
-figma.on("selectionchange", () => detectAndSend());
-// Initial detection
-detectAndSend();
+  figma.ui.onmessage = (msg: { type: string }) => {
+    if (msg.type === "switchLayout") {
+      const node = getTargetNode();
+      if (!node) {
+        figma.notify("Select a single table frame or instance.", { error: true });
+        return;
+      }
+      const parse = parseTable(node);
+      if (!parse) {
+        figma.notify("Not a valid table. Use container frames with the same number of cells per container.", { error: true });
+        return;
+      }
+      switchLayout(parse);
+      figma.notify(`Switched to ${parse.kind === "column-first" ? "column-first" : "row-first"} layout.`);
+      detectAndSend();
+    } else if (msg.type === "detect") {
+      detectAndSend();
+    }
+  };
+
+  // Run detection when selection changes
+  figma.on("selectionchange", () => detectAndSend());
+  // Initial detection
+  detectAndSend();
+}
