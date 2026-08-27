@@ -395,19 +395,25 @@ function getTargetNode(): TableRootNode | null {
 
 if (figma.command === "switch") {
   // Direct switch — no UI, just run and close.
-  const node = getTargetNode();
-  if (!node) {
-    figma.notify("Select a single table frame or instance.", { error: true });
-  } else {
-    const parse = parseTable(node);
-    if (!parse) {
-      figma.notify("Not a valid table. Use container frames with the same number of cells per container.", { error: true });
+  try {
+    const node = getTargetNode();
+    if (!node) {
+      figma.notify("Select a single table frame or instance.", { error: true });
     } else {
-      const previousKind = parse.kind;
-      switchLayout(parse);
-      const newKind = previousKind === "column-first" ? "row-first" : "column-first";
-      figma.notify(`Switched to ${newKind === "column-first" ? "▥ column-first" : "▤ row-first"} layout.`);
+      const parse = parseTable(node);
+      if (!parse) {
+        figma.notify("Not a valid table. Use container frames with the same number of cells per container.", { error: true });
+      } else {
+        const previousKind = parse.kind;
+        switchLayout(parse);
+        const newKind = previousKind === "column-first" ? "row-first" : "column-first";
+        figma.notify(`Switched to ${newKind === "column-first" ? "▥ column-first" : "▤ row-first"} layout.`);
+      }
     }
+  } catch (e) {
+    // Without the UI open, an uncaught error here has nowhere to surface — notify explicitly.
+    const message = e instanceof Error ? e.message : String(e);
+    figma.notify(`Table flip failed: ${message}`, { error: true });
   }
   figma.closePlugin();
 } else {

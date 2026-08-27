@@ -5,6 +5,8 @@
   "main": "code.js",
   "ui": "ui.html",
   "editorType": ["figma"],
+  "id": "1646251542847988943",
+  "documentAccess": "dynamic-page",
   "networkAccess": {
     "allowedDomains": ["none"]
   },

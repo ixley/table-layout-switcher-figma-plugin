@@ -26,80 +26,100 @@
         flex-direction: column;
         gap: 12px;
       }
-      .section {
-        border: 1px solid var(--figma-color-border);
-        border-radius: 8px;
-        padding: 12px;
-        background: var(--figma-color-bg-secondary);
-      }
-      .section-title {
-        font-size: 12px;
-        font-weight: 600;
-        margin-bottom: 8px;
-      }
       .status {
         font-size: 11px;
-        padding: 8px;
+        padding: 6px 8px;
         border-radius: 4px;
-        background: var(--figma-color-bg-tertiary);
         color: var(--figma-color-text-secondary);
-      }
-      .status.valid {
-        color: var(--figma-color-text-success, #0d9d56);
+        text-align: center;
       }
       .status.error {
         color: var(--figma-color-text-danger, #f24822);
       }
-      button {
-        width: 100%;
-        padding: 10px 12px;
-        border: none;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: 500;
+      .toggle {
+        display: flex;
+        gap: 8px;
+      }
+      .toggle-btn {
+        flex: 1;
+        padding: 6px;
+        border-radius: 8px;
+        border: 2px solid transparent;
+        background: var(--figma-color-bg-secondary);
         cursor: pointer;
-        font-family: inherit;
-        background: var(--figma-color-bg-brand);
-        color: var(--figma-color-text-onbrand);
+        transition: border-color 0.15s, opacity 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
-      button:hover {
-        opacity: 0.9;
+      .toggle-btn img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 4px;
       }
-      button:disabled {
-        opacity: 0.5;
+      .toggle-btn.selected {
+        border-color: var(--figma-color-bg-brand, #0d99ff);
+        background: var(--figma-color-bg-brand-tertiary, #e5f4ff);
+        cursor: default;
+      }
+      .toggle-btn:not(.selected):hover {
+        border-color: var(--figma-color-border-strong);
+      }
+      .toggle-btn:disabled,
+      .toggle-btn.disabled {
+        opacity: 0.4;
         cursor: not-allowed;
+      }
+      .toggle-btn.disabled:hover {
+        border-color: transparent;
       }
     </style>
   </head>
   <body>
     <div class="container">
-      <div class="section">
-        <div class="section-title">Flip Layout! (╯°□°)╯︵┻━┻</div>
-        <div class="status" id="status">Select a table (frame or instance) to see its layout.</div>
-        <button id="switchBtn" disabled>Switch to other layout</button>
+      <div class="toggle">
+        <button class="toggle-btn disabled" id="rowsBtn">
+          <img src="data:image/png;base64,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" alt="Row-first layout" />
+        </button>
+        <button class="toggle-btn disabled" id="colsBtn">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWAAAADUCAYAAACiTfmbAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAABgdJREFUeAHt2j+PVFUcx+FzJ7uaANE10UJt1t5ELKy1sQajUI/4BvQVIK9AeQMwtRviUttIbeEW9GIDhSZgZDFmYY6zQyArmbvs8iffs3OfpyHLmSG55/z4zJ2d6coC49N1bfTq9rjU0ce11JOllvWyjLpyoyvdVqnTq5c2TkzKcxrMvrXOudKCA8xh9+RffPX59unpqF6eLa2VYZltVr3wrP9hB7xvrXOutGDhHI72/nDu7L3vpqPy40CHbb2W7vK5s/+cL4c08H1rnXOlBQvn8PEd8Lmz2+drLd8WStd131/64dg3B3msfTs6nCst2DuH8wCfO3N3vFvnwmN1Wj6bXDm+ud9j7NvR41xpwaM5nP8Konbdod+eLbtuVC6PT9/e962nfTt6nCsteDSHK/NX+55PdY8dL+XDj1bK67NxXV3tyrK5dbOW61v3y73thcuzT75fHc/+/H7R4pD3rXXOlRYcZA5HsxSfWrS6O2yffLpS3nyrW9phe/udbnaNq/NrXaRO6ye9Tx7wvrXOudKCg8zhqNa6vmjx/Q9WBjFoq6sP72p6fNC3MPR9a51zpQVPm8Pd3wGfXLTy9rvDGbbX13qvdb30G/y+tc650oL95nBUmL9KsXycKy3Ybw4FGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIGSlb+Hqxk7h8OzbcnKuvAzugAFCBBggRIABQgQYIESAAUJ6vwVx6sxqGZIX9Sn30Patdc6VFvTNoTtggBABBggRYIAQAQYIEWCAEAEGCBFggBABBggRYIAQAQYIEWCAEAEGCBFggBABBggRYIAQAQYIEWCAEAEGCBFggBABBggRYIAQAQYIEWCAEAEGCBFggBABBggRYIAQAQYIEWCAEAEGCBFggBABBggRYIAQAQYIEWCAEAEGCBFggBABBggRYIAQAQYIEWCAEAEGCBFggBABBggRYIAQAQYIEWCAEAEGCBFggBABBggRYIAQAQYIEWCAEAEGCBFggBABBggRYIAQAQYIEWCAkJW+hasbO4XDs2/LybnyMrgDBggRYIAQAQYIEWCAEAEGCOn9FsSpM6tlSF7Up9xD27fWOVda0DeH7oABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCBBggRIABQgQYIESAAUIEGCBEgAFCegO8s1N4BvZtOTlXXoZR6cqNRQt/3allKG7d7L3Wrd4n2bfmOVdasN8cjrrSLRzGX395MIhX/Z2dWq5vPehb/r1vYej71jrnSgueNoezO+DptUUr97Zr+fmn+7N6T8sy2t2YP//YvcYH82tdpJa62fsPDHTfWudcacFB57Abn7691q2+8tvs57XCHt2NyxvH3utbtW9HlXOlBQ/ncDTZfONOnT74svA/tUwv7Ldu344m50oLHs3h/FsQkyuvbZbp9GJhrtZyYbJxYvK0x9m3o8W50oK9c9jtXRh/8fe3XTc6XwasTuvFyZUTXx/mOfatfc6VFjw5h92TDxifuTueD12t62VYZm89y5eTK8c3n+XJA9631jlXWrBwDru+R+8O3qjrTs1ul9dnP54sy6grN2YbsDXt6rXy7/HJZLO7U57TIPatdc6VFhxgDv8DLg4ivl2tWo4AAAAASUVORK5CYII=" alt="Column-first layout" />
+        </button>
       </div>
+      <div class="status" id="status">Select a table to get started.</div>
     </div>
     <script>
       const statusEl = document.getElementById("status");
-      const switchBtn = document.getElementById("switchBtn");
+      const rowsBtn = document.getElementById("rowsBtn");
+      const colsBtn = document.getElementById("colsBtn");
 
       function setStatus(kind, rows, cols, error) {
         if (error) {
           statusEl.textContent = error;
           statusEl.className = "status error";
-          switchBtn.disabled = true;
+          rowsBtn.className = "toggle-btn disabled";
+          colsBtn.className = "toggle-btn disabled";
           return;
         }
-        const label = kind === "column-first" ? `Column-first: ${cols} columns × ${rows} rows` : `Row-first: ${rows} rows × ${cols} columns`;
-        // statusEl.textContent = `${label} · ${cols} columns × ${rows} rows`;
-        statusEl.textContent = `${label}`;
-        statusEl.className = "status valid";
-        switchBtn.disabled = false;
-        switchBtn.textContent = kind === "column-first" ? "Switch to ▤ Row-first" : "Switch to ▥ Column-first";
+        statusEl.textContent = kind === "column-first"
+          ? `${cols} columns × ${rows} rows`
+          : `${rows} rows × ${cols} columns`;
+        statusEl.className = "status";
+
+        const isRows = kind === "row-first";
+        rowsBtn.className = "toggle-btn" + (isRows ? " selected" : "");
+        colsBtn.className = "toggle-btn" + (!isRows ? " selected" : "");
       }
 
-      switchBtn.onclick = () => {
-        parent.postMessage({ pluginMessage: { type: "switchLayout" } }, "*");
+      rowsBtn.onclick = () => {
+        if (!rowsBtn.classList.contains("selected") && !rowsBtn.classList.contains("disabled")) {
+          parent.postMessage({ pluginMessage: { type: "switchLayout" } }, "*");
+        }
+      };
+      colsBtn.onclick = () => {
+        if (!colsBtn.classList.contains("selected") && !colsBtn.classList.contains("disabled")) {
+          parent.postMessage({ pluginMessage: { type: "switchLayout" } }, "*");
+        }
       };
 
       window.onmessage = (event) => {
